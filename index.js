@@ -1,9 +1,3 @@
-const refs = {
-    startBtn: document.querySelector('button[data-action="start"]'),
-    stopBtn: document.querySelector('button[data-action="stop"]'),
-    body: document.querySelector('body')
-};
-
 const colors = [
   '#FFFFFF',
   '#2196F3',
@@ -13,48 +7,59 @@ const colors = [
   '#795548',
 ];
 const randomIntegerFromInterval = (min, max) => {
- return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 };
-const timer = {
-    intervalId: null,
-    start() {
-        this.intervalId = setInterval(() => {
-            const min = 0;
-            const max = colors.length - 1;
-            let i = randomIntegerFromInterval(min, max);
-            refs.body.style.backgroundColor = colors[i];
-        }, 1000);
-    },
-    stop() {
-        clearInterval(this.intervalId);
-    },
-};
-refs.startBtn.addEventListener("click", timer.start.bind(timer));
-refs.stopBtn.addEventListener("click", timer.stop.bind(timer));
+
+// Доступы к кнопкам 
+const startRef = document.querySelector('button[data-action="start"]');
+const stopRef = document.querySelector('button[data-action="stop"]');
+const bodyRef = document.querySelector("body");
 
 
-// const timer = {
-//   isActive: false,
-//   start() {
-//     if (this.isActive) {
-//       return;
-//     }
+let isActive = false;
+let intervalId = null;
 
-//     this.isActive = true;
-//     this.colorsSwitch = setInterval(() => {
-//       const min = 0;
-//       const max = colors.length - 1;
-//       let i = randomIntegerFromInterval(min, max);
-//       refs.body.style.backgroundColor = colors[i];
-//     }, 1000);
-//   },
-//   stop() {
-//     clearInterval(this.colorsSwitch);
-//     this.isActive = false;
-//   },
-// };
+// Добавление слушателей события
+startRef.addEventListener("click", startBodyColor);
+stopRef.addEventListener("click", stopBodyColor);
 
-// refs.startBtn.addEventListener("click", timer.start.bind(timer));
-// refs.stopBtn.addEventListener("click", timer.stop.bind(timer));
+// Функция смены цвета 
+function startBodyColor() {
+  if (isActive) {
+    return;
+  }
+
+  changeBodyColor(colors);
+
+  intervalId = setInterval(changeBodyColor, 1000, colors);
+
+  isActive = true;
+
+  addDisabled(startRef);
+}
+
+// Функция clear
+function stopBodyColor() {
+  clearInterval(intervalId);
+
+  isActive = false;
+
+  removeDisabled(startRef);
+}
+
+// Функция смены цвета body
+function changeBodyColor(colorsArr) {
+  bodyRef.style.backgroundColor =
+    colorsArr[randomIntegerFromInterval(0, colorsArr.length - 1)];
+}
+
+// Функции для добавления и удаления disabled 
+function addDisabled(element) {
+  element.setAttribute("disabled", "");
+}
+
+function removeDisabled(element) {
+  element.removeAttribute("disabled");
+}
 
 
